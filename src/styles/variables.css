@@ -1,9 +1,10 @@
 :root {
     /* Кольори */
-    --color-primary: #47A992;
-    --color-secondary: #482121;
+    --color-primary: #99ac57;
+    --color-secondary: #212121;
     --color-background: #7A3E3E;
-    --color-text: #EEEEEE;
+    --color-text: #261f3b;
+    --button-color: rgb(81, 81, 81);
 
     /* #47A992
 #482121
@@ -11,7 +12,7 @@
 #EEEEEE
    */
     /* Розміри */
-    --border-radius: 8px;
+    --border-radius: 10px;
     --padding: 12px;
   
     /* Анімації */

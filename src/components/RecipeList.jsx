@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
-import '../index.css';
+import '../styles/RecipeList.css';
+import EditableRecipeForm from './EditableRecipeForm';
 
 function RecipeList() {
   const [recipes, setRecipes] = useState([]);
+  const [selectedIndex, setSelectedIndex] = useState(null);
 
   useEffect(() => {
     const saved = localStorage.getItem('recipes');
@@ -11,70 +13,54 @@ function RecipeList() {
     }
   }, []);
 
-  if (recipes.length === 0) {
-    return <p style={styles.empty}>У вас поки що немає жодного рецепта 😢</p>;
-  }
+  const handleDelete = (indexToDelete) => {
+    const updated = recipes.filter((_, i) => i !== indexToDelete);
+    setRecipes(updated);
+    localStorage.setItem('recipes', JSON.stringify(updated));
+    setSelectedIndex(null);
+  };
+
+  const handleUpdate = (index, updatedRecipe) => {
+    const updated = [...recipes];
+    updated[index] = updatedRecipe;
+    setRecipes(updated);
+    localStorage.setItem('recipes', JSON.stringify(updated));
+    setSelectedIndex(null);
+  };
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.heading}>Мої рецепти</h2>
-      <div style={styles.list}>
-        {recipes.map((recipe, index) => (
-          <div key={index} style={styles.card}>
-            {recipe.image && <img src={recipe.image} alt={recipe.title} style={styles.image} />}
-            <h3>{recipe.title}</h3>
-            <p><strong>Порцій:</strong> {recipe.portions}</p>
-            <p><strong>Опис:</strong> {recipe.description}</p>
-            <ul>
-              {recipe.ingredients.map((ing, i) => (
-                <li key={i}>{ing}</li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
+    <div className="recipe-list-wrapper">
+      {selectedIndex === null && (
+        <div className="recipe-grid">
+          {recipes.map((recipe, index) => (
+            <div key={index} className="recipe-card">
+              <div className="image-wrapper" onClick={() => setSelectedIndex(index)}>
+                {recipe.image && <img src={recipe.image} alt="thumb" />}
+              </div>
+              <div className="recipe-content">
+                <h3>{recipe.title}</h3>
+                <p>
+                  {recipe.description.length > 100
+                    ? `${recipe.description.slice(0, 100)}...`
+                    : recipe.description}
+                </p>
+              </div>
+              <button className="delete-btn" onClick={() => handleDelete(index)}>✖</button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {selectedIndex !== null && (
+        <EditableRecipeForm
+          mode="edit"
+          initialData={recipes[selectedIndex]}
+          onSubmit={(updatedRecipe) => handleUpdate(selectedIndex, updatedRecipe)}
+          onCancel={() => setSelectedIndex(null)}
+        />
+      )}
     </div>
   );
 }
-
-const styles = {
-  container: {
-    maxWidth: '900px',
-    margin: '30px auto',
-    padding: '10px',
-    color: 'black',
-  },
-  heading: {
-    textAlign: 'center',
-    marginBottom: '20px',
-  },
-  list: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: '20px',
-    justifyContent: 'center',
-  },
-  card: {
-    width: '250px',
-    padding: '15px',
-    border: '1px solid #ccc',
-    borderRadius: '8px',
-    backgroundColor: '#fff',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-  },
-  image: {
-    width: '100%',
-    height: '160px',
-    objectFit: 'cover',
-    borderRadius: '6px',
-    marginBottom: '10px',
-  },
-  empty: {
-    textAlign: 'center',
-    marginTop: '40px',
-    fontSize: '18px',
-    color: '#666',
-  }
-};
 
 export default RecipeList;
