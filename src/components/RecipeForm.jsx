@@ -1,195 +1,142 @@
-import { useState } from "react";
+import { useState } from 'react';
+import '../styles/RecipeForm.css';
 
 function RecipeForm() {
-  const [title, setTitle] = useState("");
-  const [ingredients, setIngredients] = useState([""]);
+  const [title, setTitle] = useState('');
+  const [ingredients, setIngredients] = useState([]);
   const [portions, setPortions] = useState(1);
-  const [description, setDescription] = useState("");
-  const [image, setImage] = useState("");
+  const [description, setDescription] = useState('');
+  const [image, setImage] = useState('');
+  const [showIngredients, setShowIngredients] = useState(false);
 
-  const handleIngredientChange = (index, value) => {
+  const units = ['літри', 'кг', 'пачка', 'шт'];
+
+  const handleIngredientChange = (index, field, value) => {
     const newIngredients = [...ingredients];
-    newIngredients[index] = value;
+    newIngredients[index][field] = value;
     setIngredients(newIngredients);
   };
 
   const addIngredientField = () => {
-    setIngredients([...ingredients, ""]);
+    setIngredients([...ingredients, { name: '', quantity: '', unit: '' }]);
+  };
+
+  const handleAddIngredients = () => {
+    setShowIngredients(true);
+    if (ingredients.length === 0) {
+      addIngredientField();
+    }
+  };
+
+  const removeIngredient = (indexToRemove) => {
+    const updated = ingredients.filter((_, i) => i !== indexToRemove);
+    setIngredients(updated);
   };
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setImage(reader.result); // base64 string
-      };
+      reader.onloadend = () => setImage(reader.result);
       reader.readAsDataURL(file);
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const recipeData = {
-      title,
-      ingredients,
-      portions,
-      description,
-      image,
-    };
-    console.log("Recipe saved:", recipeData);
-
-    // Збереження в LocalStorage
-    const existingRecipes = JSON.parse(localStorage.getItem("recipes")) || [];
-    const updatedRecipes = [...existingRecipes, recipeData];
-    localStorage.setItem("recipes", JSON.stringify(updatedRecipes));
-
+    const recipeData = { title, ingredients, portions, description, image };
+    const existing = JSON.parse(localStorage.getItem('recipes')) || [];
+    localStorage.setItem('recipes', JSON.stringify([...existing, recipeData]));
     resetForm();
   };
 
   const resetForm = () => {
-    setTitle("");
-    setIngredients([""]);
+    setTitle('');
+    setIngredients([]);
     setPortions(1);
-    setDescription("");
-    setImage("");
+    setDescription('');
+    setImage('');
+    setShowIngredients(false);
   };
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.heading}>Додати новий рецепт</h2>
-      <form onSubmit={handleSubmit} style={styles.form}>
-        <input
-          style={styles.input}
-          type="text"
-          placeholder="Назва рецепту"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
+    <div className="recipe-form">
+      <h2>Додати новий рецепт</h2>
+      <form onSubmit={handleSubmit}>
+        <label>Назва рецепту</label>
+        <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
 
-        <div style={styles.ingredientsSection}>
-          <h4>Інгредієнти:</h4>
-          {ingredients.map((ingredient, index) => (
-            <input
-              key={index}
-              style={styles.input}
-              type="text"
-              placeholder={`Інгредієнт ${index + 1}`}
-              value={ingredient}
-              onChange={(e) => handleIngredientChange(index, e.target.value)}
-              required
-            />
-          ))}
-          <button
-            type="button"
-            style={styles.buttonSmall}
-            onClick={addIngredientField}
-          >
-            + Додати інгредієнт
+        {!showIngredients && (
+          <button type="button" onClick={handleAddIngredients}>
+            Додати інгредієнти
           </button>
-        </div>
+        )}
 
+        {showIngredients && (
+          <div className="ingredients-section">
+            <h4>Інгредієнти:</h4>
+            {ingredients.map((ingredient, index) => (
+              <div key={index} className="ingredient-row">
+                <div className="input-group">
+                  <label>Назва</label>
+                  <input
+                    type="text"
+                    value={ingredient.name}
+                    onChange={(e) => handleIngredientChange(index, 'name', e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="input-group">
+                  <label>Кількість</label>
+                  <input
+                    type="number"
+                    value={ingredient.quantity}
+                    onChange={(e) => handleIngredientChange(index, 'quantity', e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="input-group">
+                  <label>Одиниця</label>
+                  <select
+                    value={ingredient.unit}
+                    onChange={(e) => handleIngredientChange(index, 'unit', e.target.value)}
+                    required
+                  >
+                    <option value="">Виберіть</option>
+                    {units.map((unit, i) => (
+                      <option key={i} value={unit}>{unit}</option>
+                    ))}
+                  </select>
+                </div>
+                <button type="button" className="delete-btn" onClick={() => removeIngredient(index)}>✖</button>
+              </div>
+            ))}
+            <button type="button" onClick={addIngredientField}>
+              + Додати ще інгредієнт
+            </button>
+          </div>
+        )}
+
+        <label>Кількість порцій</label>
         <input
-          style={styles.input}
           type="number"
-          placeholder="Кількість порцій"
           value={portions}
           min="1"
           onChange={(e) => setPortions(e.target.value)}
           required
         />
 
-        <textarea
-          style={styles.textarea}
-          placeholder="Опис рецепту"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
-        />
+        <label>Опис рецепту</label>
+        <textarea value={description} onChange={(e) => setDescription(e.target.value)} required />
 
-        {/* Поле для завантаження фото */}
-        <input
-          style={{ marginBottom: "15px" }}
-          type="file"
-          accept="image/*"
-          onChange={handleImageUpload}
-        />
+        <label>Фото</label>
+        <input type="file" accept="image/*" onChange={handleImageUpload} />
+        {image && <img src={image} alt="Preview" className="preview-image" />}
 
-        {/* Попередній перегляд фото */}
-        {image && (
-          <img src={image} alt="Перегляд фото" style={styles.preview} />
-        )}
-
-        <button type="submit" style={styles.button}>
-          Зберегти рецепт
-        </button>
+        <button type="submit">Зберегти рецепт</button>
       </form>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    maxWidth: "600px",
-    margin: "40px auto",
-    padding: "20px",
-    border: "1px solid #ccc",
-    borderRadius: "8px",
-    backgroundColor: "#fafafa",
-  },
-  heading: {
-    textAlign: "center",
-    marginBottom: "20px",
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-  },
-  input: {
-    marginBottom: "15px",
-    padding: "10px",
-    fontSize: "16px",
-    borderRadius: "4px",
-    border: "1px solid #ccc",
-  },
-  textarea: {
-    height: "120px",
-    marginBottom: "15px",
-    padding: "10px",
-    fontSize: "16px",
-    borderRadius: "4px",
-    border: "1px solid #ccc",
-    resize: "vertical",
-  },
-  ingredientsSection: {
-    marginBottom: "20px",
-  },
-  button: {
-    padding: "12px 20px",
-    fontSize: "16px",
-    backgroundColor: "#4caf50",
-    color: "#fff",
-    border: "none",
-    borderRadius: "4px",
-    cursor: "pointer",
-  },
-  buttonSmall: {
-    padding: "8px 14px",
-    fontSize: "14px",
-    backgroundColor: "#2196f3",
-    color: "#fff",
-    border: "none",
-    borderRadius: "4px",
-    marginTop: "10px",
-    cursor: "pointer",
-  },
-  preview: {
-    width: "100%",
-    marginBottom: "15px",
-    objectFit: "cover",
-    borderRadius: "4px",
-  },
-};
 
 export default RecipeForm;

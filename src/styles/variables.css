@@ -1,0 +1,28 @@
+:root {
+    /* Кольори */
+    --color-primary: #47A992;
+    --color-secondary: #482121;
+    --color-background: #7A3E3E;
+    --color-text: #EEEEEE;
+
+    /* #47A992
+#482121
+#7A3E3E
+#EEEEEE
+   */
+    /* Розміри */
+    --border-radius: 8px;
+    --padding: 12px;
+  
+    /* Анімації */
+    --fade-time: 0.3s;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }

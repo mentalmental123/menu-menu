@@ -1,3 +1,5 @@
+@import './styles/variables.css';
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -13,6 +15,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+body{
+  color: var(--color-secondary);
+}
+
 a {
   font-weight: 500;
   color: #646cff;
@@ -24,7 +30,7 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
+  /* display: flex; */
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
@@ -65,4 +71,11 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+
+/* div styles */
+
+.center-div{
+  margin: 0 auto;
 }
