@@ -1,5 +1,5 @@
 .meal-planner {
-    max-width: 1200px;
+    max-width: 1500px;
     margin: 0 auto;
     padding: 20px;
   }
@@ -22,6 +22,11 @@
     border-radius: 8px;
     padding: 10px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+
+  .planner-day img{
+    /* width: 100px; */
+    height: 100px;
   }
   
   .planner-day-header {
@@ -73,3 +78,14 @@
     justify-content: center;
     border-radius: 8px;
   }
+
+  .calendar-slot {
+    min-height: 150px;
+    min-width: 150px;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    transition: background-color 0.2s ease;
+  }
+  

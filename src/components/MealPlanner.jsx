@@ -7,6 +7,8 @@ import {
   DragOverlay,
 } from '@dnd-kit/core';
 import DroppableSlot from './DroppableSlot';
+// import {Droppable} from './Droppable';
+import RemoveZone from './RemovalZone';
 
 const daysOfWeek = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Нд'];
 const mealSlots = ['Сніданок', 'Обід', 'Вечеря'];
@@ -30,7 +32,7 @@ function MealPlanner() {
 
     const updated = { ...calendarData };
 
-    if (over.id.startsWith('remove-zone')) {
+    if (over.id === 'remove-zone') {
       // Remove recipe from calendar
       for (const key in updated) {
         if (updated[key]?.title === recipe.title) {
@@ -69,10 +71,8 @@ function MealPlanner() {
         </div>
 
         <div className="removal-zone-wrapper">
-          <div className="removal-zone" id="remove-zone">
-            🗑️ Перетягни сюди, щоб видалити зі слоту або повернути в пошук
-          </div>
-        </div>
+  <RemoveZone id="remove-zone" />
+</div>
 
         <RecipeSearchBar added={Object.values(calendarData)} />
 
